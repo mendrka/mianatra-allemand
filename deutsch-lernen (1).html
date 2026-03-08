@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deutsch Lernen — Apprenez l'Allemand</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a28;
+  --border: #2a2a40;
+  --accent: #e8c547;
+  --accent2: #7b6ef6;
+  --accent3: #4ecdc4;
+  --text: #f0f0f8;
+  --text-muted: #8888aa;
+  --red: #ff6b6b;
+  --green: #51cf66;
+  --radius: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ANIMATED BG */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(123,110,246,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(232,197,71,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%, rgba(78,205,196,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* SCREEN MANAGEMENT */
+.screen { display: none; position: relative; z-index: 1; }
+.screen.active { display: block; }
+
+/* ===================== WELCOME SCREEN ===================== */
+#welcome {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo-area {
+  margin-bottom: 3rem;
+  animation: fadeUp 0.8s ease both;
+}
+
+.logo-flag {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.logo-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.logo-title span.de { color: var(--accent); }
+.logo-title span.lernen { color: var(--accent2); }
+
+.logo-sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lang-selector-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  animation: fadeUp 0.8s 0.2s ease both;
+  font-family: 'Space Mono', monospace;
+}
+
+.lang-cards {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.lang-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lang-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent2), var(--accent3));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.lang-card:hover::before, .lang-card.selected::before { opacity: 0.12; }
+.lang-card.selected { border-color: var(--accent2); }
+
+.lang-card .flag { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+.lang-card .lang-name { font-weight: 600; font-size: 1rem; position: relative; }
+.lang-card .lang-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; position: relative; }
+
+.start-btn {
+  background: linear-gradient(135deg, var(--accent), #f0a500);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 30px rgba(232,197,71,0.3);
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.start-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(232,197,71,0.4);
+}
+
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.word-count-info {
+  margin-top: 2rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  animation: fadeUp 0.8s 0.5s ease both;
+}
+
+/* ===================== MAIN APP ===================== */
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10,10,15,0.8);
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.header-logo span { color: var(--accent); }
+
+.progress-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 2rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent3));
+  border-radius: 100px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.progress-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.header-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+.back-btn, .lang-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.back-btn:hover, .lang-toggle:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* NAVIGATION TABS */
+.mode-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+
+.mode-nav::-webkit-scrollbar { display: none; }
+
+.mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.mode-tab.active {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: white;
+}
+
+.mode-tab:hover:not(.active) { border-color: var(--text-muted); color: var(--text); }
+
+.mode-icon { font-size: 1rem; }
+
+/* CONTENT AREA */
+.content { flex: 1; padding: 2rem; max-width: 900px; margin: 0 auto; width: 100%; }
+
+/* CATEGORY FILTER */
+.category-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cat-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.cat-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+.cat-btn:hover:not(.active) { border-color: var(--text-muted); color: var(--text); }
+
+/* ===================== MODE 1: VOCAB CARDS ===================== */
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.vocab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vocab-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent3));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.vocab-card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+.vocab-card:hover::after { transform: scaleX(1); }
+
+.vc-article {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.vc-german {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+}
+
+.vc-translation {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.vc-category {
+  display: inline-block;
+  background: rgba(123,110,246,0.15);
+  border: 1px solid rgba(123,110,246,0.3);
+  color: var(--accent2);
+  font-size: 0.72rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+}
+
+.vc-example {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  display: none;
+}
+
+.vocab-card.expanded .vc-example { display: block; }
+
+/* ===================== MODE 2: FILL-IN-THE-BLANK ===================== */
+.fill-container { max-width: 650px; margin: 0 auto; }
+
+.fill-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.fill-counter {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.score-badge {
+  background: rgba(81,207,102,0.1);
+  border: 1px solid rgba(81,207,102,0.3);
+  color: var(--green);
+  font-size: 0.85rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-family: 'Space Mono', monospace;
+}
+
+.fill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.fill-sentence {
+  font-size: 1.4rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+}
+
+.fill-blank {
+  display: inline-block;
+  min-width: 100px;
+  border-bottom: 3px solid var(--accent);
+  padding: 0 0.5rem;
+  vertical-align: bottom;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.fill-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.fill-option {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+.fill-option:hover:not(:disabled) { border-color: var(--accent2); color: var(--accent2); transform: translateY(-1px); }
+.fill-option.correct { border-color: var(--green); background: rgba(81,207,102,0.1); color: var(--green); }
+.fill-option.wrong { border-color: var(--red); background: rgba(255,107,107,0.1); color: var(--red); }
+.fill-option:disabled { cursor: not-allowed; }
+
+.fill-feedback {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.fill-feedback.show { display: block; animation: fadeUp 0.3s ease; }
+.fill-feedback.correct { background: rgba(81,207,102,0.1); border: 1px solid rgba(81,207,102,0.3); color: var(--green); }
+.fill-feedback.wrong { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--red); }
+
+.next-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent2), var(--accent3));
+  color: white;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 1rem;
+  display: none;
+}
+
+.next-btn.show { display: block; }
+.next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(123,110,246,0.3); }
+
+/* ===================== MODE 3: MATCHING ===================== */
+.match-container { max-width: 700px; margin: 0 auto; }
+
+.match-instructions {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.match-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.match-col-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.match-item {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.match-item:hover:not(.matched):not(:disabled) { border-color: var(--accent2); color: var(--accent2); }
+.match-item.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,0.08); }
+.match-item.matched { border-color: var(--green); color: var(--green); background: rgba(81,207,102,0.08); cursor: default; opacity: 0.7; }
+.match-item.wrong-flash { border-color: var(--red); background: rgba(255,107,107,0.1); animation: shake 0.3s ease; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.match-score-display {
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.reload-match-btn {
+  display: block;
+  margin: 1rem auto;
+  padding: 0.7rem 2rem;
+  border-radius: 50px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.reload-match-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+/* ===================== MODE 4: TRANSLATION ===================== */
+.translate-container { max-width: 650px; margin: 0 auto; }
+
+.translate-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.translate-prompt-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent3);
+  margin-bottom: 0.75rem;
+}
+
+.translate-prompt {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.translate-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.translate-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s;
+  resize: none;
+}
+
+.translate-input:focus { outline: none; border-color: var(--accent2); }
+
+.translate-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.check-btn {
+  flex: 1;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent2), var(--accent3));
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.check-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(123,110,246,0.3); }
+
+.reveal-btn {
+  padding: 0.9rem 1.5rem;
+  border-radius: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.reveal-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.translate-answer-box {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: rgba(78,205,196,0.08);
+  border: 1px solid rgba(78,205,196,0.25);
+  display: none;
+}
+
+.translate-answer-box.show { display: block; animation: fadeUp 0.3s ease; }
+
+.answer-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent3);
+  margin-bottom: 0.5rem;
+}
+
+.answer-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.answer-explanation {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.translate-nav {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.t-nav-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.t-nav-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ===================== MODE 5: GRAMMAR TABLE ===================== */
+.grammar-container { max-width: 800px; margin: 0 auto; }
+
+.grammar-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.grammar-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+.grammar-section-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.grammar-table th {
+  background: var(--surface2);
+  padding: 0.7rem 1rem;
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.grammar-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(42,42,64,0.5);
+  vertical-align: middle;
+}
+
+.grammar-table tr:last-child td { border-bottom: none; }
+.grammar-table tr:hover td { background: rgba(123,110,246,0.05); }
+
+.grammar-table .de { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+.grammar-table .article-der { color: #4ecdc4; }
+.grammar-table .article-die { color: #ff9ff3; }
+.grammar-table .article-das { color: #ffd93d; }
+
+.grammar-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.article-card .art { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; margin-bottom: 0.25rem; }
+.article-card .art-type { font-size: 0.75rem; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+.article-card.der .art { color: #4ecdc4; }
+.article-card.die .art { color: #ff9ff3; }
+.article-card.das .art { color: #ffd93d; }
+
+/* ===================== MODE 6: REVIEW / QUIZ ===================== */
+.review-container { max-width: 600px; margin: 0 auto; }
+
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.review-badge {
+  display: inline-block;
+  background: rgba(232,197,71,0.1);
+  border: 1px solid rgba(232,197,71,0.3);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.review-question {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.review-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.review-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.review-option {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+.review-option:hover:not(:disabled) { border-color: var(--accent2); color: var(--accent2); }
+.review-option.correct { border-color: var(--green); background: rgba(81,207,102,0.1); color: var(--green); }
+.review-option.wrong { border-color: var(--red); background: rgba(255,107,107,0.1); color: var(--red); }
+
+.review-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.stat-num { font-family: 'Space Mono', monospace; font-size: 1.8rem; font-weight: 700; }
+.stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.stat-card.correct .stat-num { color: var(--green); }
+.stat-card.wrong .stat-num { color: var(--red); }
+.stat-card.total .stat-num { color: var(--accent); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+.empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+.empty-state p { font-size: 1rem; }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeUp 0.4s ease; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .content { padding: 1rem; }
+  .app-header { padding: 1rem; }
+  .progress-area { display: none; }
+  .vocab-grid { grid-template-columns: 1fr 1fr; }
+  .match-columns { grid-template-columns: 1fr; gap: 1rem; }
+  .fill-options { grid-template-columns: 1fr; }
+  .review-options { grid-template-columns: 1fr; }
+  .grammar-articles-grid { grid-template-columns: repeat(3, 1fr); }
+  .mode-nav { padding: 0.75rem 1rem; }
+  .mode-tab { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+  .lang-cards { gap: 0.75rem; }
+  .lang-card { min-width: 130px; padding: 1.25rem 1.5rem; }
+  .translate-prompt { font-size: 1.4rem; }
+}
+
+@media (max-width: 480px) {
+  .vocab-grid { grid-template-columns: 1fr; }
+  .review-stats { grid-template-columns: repeat(3, 1fr); }
+  .fill-sentence { font-size: 1.1rem; }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* TOOLTIP */
+.tooltip {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* CONFETTI-LIKE CELEBRATION */
+.celebrate {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+.celebrate-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: confetti 1s ease-out forwards;
+}
+
+@keyframes confetti {
+  0% { transform: translate(0,0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div id="welcome" class="screen active">
+  <div class="logo-area">
+    <span class="logo-flag">🇩🇪</span>
+    <div class="logo-title">
+      <span class="de">Deutsch</span><br>
+      <span class="lernen">Lernen</span>
+    </div>
+    <div class="logo-sub">Mémoriser · Memorize · Hazoina</div>
+  </div>
+
+  <div class="lang-selector-title">Choisissez votre langue / Misafidy fiteny</div>
+  <div class="lang-cards">
+    <div class="lang-card" onclick="selectLang('fr')" id="card-fr">
+      <span class="flag">🇫🇷</span>
+      <div class="lang-name">Français</div>
+      <div class="lang-hint">+ Allemand</div>
+    </div>
+    <div class="lang-card" onclick="selectLang('mg')" id="card-mg">
+      <span class="flag">🇲🇬</span>
+      <div class="lang-name">Malagasy</div>
+      <div class="lang-hint">+ Alemana</div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="startBtn" onclick="startApp()" disabled>
+    Commencer l'apprentissage →
+  </button>
+
+  <div class="word-count-info">100 mots & expressions essentiels • 6 modes d'apprentissage</div>
+</div>
+
+<!-- MAIN APP SCREEN -->
+<div id="app" class="screen">
+  <header class="app-header">
+    <div class="header-logo">Deutsch <span>Lernen</span></div>
+    <div class="progress-area">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 / 100</div>
+    </div>
+    <div class="header-actions">
+      <button class="lang-toggle" onclick="toggleLang()">🌐 <span id="langLabel">FR</span></button>
+      <button class="back-btn" onclick="goHome()">← Accueil</button>
+    </div>
+  </header>
+
+  <!-- MODE NAVIGATION -->
+  <nav class="mode-nav">
+    <button class="mode-tab active" data-mode="vocab" onclick="switchMode('vocab')">
+      <span class="mode-icon">📖</span> <span class="mode-text">Vocabulaire</span>
+    </button>
+    <button class="mode-tab" data-mode="fill" onclick="switchMode('fill')">
+      <span class="mode-icon">✏️</span> <span class="mode-text">Compléter</span>
+    </button>
+    <button class="mode-tab" data-mode="match" onclick="switchMode('match')">
+      <span class="mode-icon">🔗</span> <span class="mode-text">Associer</span>
+    </button>
+    <button class="mode-tab" data-mode="translate" onclick="switchMode('translate')">
+      <span class="mode-icon">🔄</span> <span class="mode-text">Traduire</span>
+    </button>
+    <button class="mode-tab" data-mode="grammar" onclick="switchMode('grammar')">
+      <span class="mode-icon">📐</span> <span class="mode-text">Grammaire</span>
+    </button>
+    <button class="mode-tab" data-mode="review" onclick="switchMode('review')">
+      <span class="mode-icon">🎯</span> <span class="mode-text">Quiz Final</span>
+    </button>
+  </nav>
+
+  <!-- CONTENT AREA -->
+  <div class="content" id="mainContent"></div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const VOCAB = [
+  // Salutations
+  { de: "Guten Morgen", article: "", fr: "Bonjour (matin)", mg: "Manahoana (maraina)", cat: "salutations", example_de: "Guten Morgen, wie geht es Ihnen?", example_fr: "Bonjour, comment allez-vous?", example_mg: "Manahoana, salama tsara ve?" },
+  { de: "Guten Tag", article: "", fr: "Bonjour (journée)", mg: "Manahoana (antoandro)", cat: "salutations", example_de: "Guten Tag, Herr Müller.", example_fr: "Bonjour, M. Müller.", example_mg: "Manahoana, Mr Müller." },
+  { de: "Guten Abend", article: "", fr: "Bonsoir", mg: "Manahoana (hariva)", cat: "salutations", example_de: "Guten Abend, alle!", example_fr: "Bonsoir, tout le monde!", example_mg: "Hariva tsara, ry rehetra!" },
+  { de: "Gute Nacht", article: "", fr: "Bonne nuit", mg: "Tafandria mandry", cat: "salutations", example_de: "Gute Nacht und schlaf gut!", example_fr: "Bonne nuit et dors bien!", example_mg: "Tafandria tsara!" },
+  { de: "Auf Wiedersehen", article: "", fr: "Au revoir", mg: "Veloma", cat: "salutations", example_de: "Auf Wiedersehen bis morgen!", example_fr: "Au revoir à demain!", example_mg: "Veloma ampitso!" },
+  { de: "Danke", article: "", fr: "Merci", mg: "Misaotra", cat: "salutations", example_de: "Danke sehr für alles.", example_fr: "Merci beaucoup pour tout.", example_mg: "Misaotra betsaka ho an'ny zava-drehetra." },
+  { de: "Bitte", article: "", fr: "S'il vous plaît / De rien", mg: "Azafady / Tsy misy fisaorana", cat: "salutations", example_de: "Ein Wasser, bitte.", example_fr: "De l'eau, s'il vous plaît.", example_mg: "Rano iray, azafady." },
+  { de: "Entschuldigung", article: "", fr: "Excusez-moi / Pardon", mg: "Miala tsiny / Azafady", cat: "salutations", example_de: "Entschuldigung, wo ist der Bahnhof?", example_fr: "Excusez-moi, où est la gare?", example_mg: "Miala tsiny, aiza ny gara?" },
+
+  // Famille
+  { de: "Vater", article: "der", fr: "Père", mg: "Ray", cat: "famille", example_de: "Mein Vater heißt Thomas.", example_fr: "Mon père s'appelle Thomas.", example_mg: "Thomas no anaran'ny raiko." },
+  { de: "Mutter", article: "die", fr: "Mère", mg: "Reny / Neny", cat: "famille", example_de: "Meine Mutter kocht gut.", example_fr: "Ma mère cuisine bien.", example_mg: "Mahandro tsara ny reniko." },
+  { de: "Kind", article: "das", fr: "Enfant", mg: "Zaza / Anaka", cat: "famille", example_de: "Das Kind spielt im Garten.", example_fr: "L'enfant joue dans le jardin.", example_mg: "Milalao ao an-tsaha ny zaza." },
+  { de: "Freund", article: "der", fr: "Ami (masc.)", mg: "Namana (lahy)", cat: "famille", example_de: "Er ist mein bester Freund.", example_fr: "C'est mon meilleur ami.", example_mg: "Namako tsara indrindra izy." },
+  { de: "Freundin", article: "die", fr: "Amie (fém.)", mg: "Namana (vavy)", cat: "famille", example_de: "Sie ist meine Freundin.", example_fr: "C'est mon amie.", example_mg: "Namako vavy izy." },
+
+  // Nourriture
+  { de: "Wasser", article: "das", fr: "Eau", mg: "Rano", cat: "nourriture", example_de: "Ich trinke gerne Wasser.", example_fr: "J'aime boire de l'eau.", example_mg: "Tia misotro rano aho." },
+  { de: "Brot", article: "das", fr: "Pain", mg: "Mofo", cat: "nourriture", example_de: "Das Brot ist frisch.", example_fr: "Le pain est frais.", example_mg: "Vaovao ny mofo." },
+  { de: "Kaffee", article: "der", fr: "Café", mg: "Kafe", cat: "nourriture", example_de: "Ich trinke jeden Morgen Kaffee.", example_fr: "Je bois du café chaque matin.", example_mg: "Misotro kafe aho isan'andro maraina." },
+  { de: "Essen", article: "das", fr: "Nourriture / Repas", mg: "Sakafo", cat: "nourriture", example_de: "Das Essen ist sehr lecker.", example_fr: "La nourriture est très délicieuse.", example_mg: "Matsiro be ny sakafo." },
+  { de: "Apfel", article: "der", fr: "Pomme", mg: "Paoma", cat: "nourriture", example_de: "Ein Apfel pro Tag ist gesund.", example_fr: "Une pomme par jour, c'est sain.", example_mg: "Paoma iray isan'andro dia salama tsara." },
+
+  // Maison
+  { de: "Haus", article: "das", fr: "Maison", mg: "Trano", cat: "maison", example_de: "Unser Haus ist groß.", example_fr: "Notre maison est grande.", example_mg: "Lehibe ny tranonay." },
+  { de: "Tisch", article: "der", fr: "Table", mg: "Latabatra", cat: "maison", example_de: "Das Buch liegt auf dem Tisch.", example_fr: "Le livre est sur la table.", example_mg: "Eo an-databatra ny boky." },
+  { de: "Buch", article: "das", fr: "Livre", mg: "Boky", cat: "maison", example_de: "Ich lese gerne Bücher.", example_fr: "J'aime lire des livres.", example_mg: "Tia mamaky boky aho." },
+  { de: "Lampe", article: "die", fr: "Lampe / Lumière", mg: "Jiro / Fanazavana", cat: "maison", example_de: "Die Lampe ist kaputt.", example_fr: "La lampe est cassée.", example_mg: "Tapaka ny jiro." },
+
+  // Ville
+  { de: "Stadt", article: "die", fr: "Ville", mg: "Tanàna", cat: "ville", example_de: "Antananarivo ist eine große Stadt.", example_fr: "Antananarivo est une grande ville.", example_mg: "Tanàna lehibe Antananarivo." },
+  { de: "Schule", article: "die", fr: "École", mg: "Sekoly", cat: "ville", example_de: "Die Schule beginnt um 8 Uhr.", example_fr: "L'école commence à 8h.", example_mg: "Manomboka amin'ny 8 ora ny sekoly." },
+  { de: "Bahnhof", article: "der", fr: "Gare", mg: "Gara", cat: "ville", example_de: "Der Bahnhof ist in der Stadtmitte.", example_fr: "La gare est au centre-ville.", example_mg: "Ao afovoan-tanàna ny gara." },
+  { de: "Auto", article: "das", fr: "Voiture", mg: "Fiara", cat: "ville", example_de: "Mein Auto ist rot.", example_fr: "Ma voiture est rouge.", example_mg: "Mena ny fiarak-diako." },
+  { de: "Handy", article: "das", fr: "Téléphone portable", mg: "Finday", cat: "ville", example_de: "Mein Handy ist neu.", example_fr: "Mon téléphone est neuf.", example_mg: "Vaovao ny findaiko." },
+
+  // Animaux
+  { de: "Hund", article: "der", fr: "Chien", mg: "Alika", cat: "animaux", example_de: "Der Hund bellt laut.", example_fr: "Le chien aboie fort.", example_mg: "Mihaboka mafy ny alika." },
+  { de: "Katze", article: "die", fr: "Chat", mg: "Saka", cat: "animaux", example_de: "Die Katze schläft den ganzen Tag.", example_fr: "Le chat dort toute la journée.", example_mg: "Matory ny andro manontolo ny saka." },
+
+  // Nombres
+  { de: "Eins", article: "", fr: "Un (1)", mg: "Iray (1)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Zwei", article: "", fr: "Deux (2)", mg: "Roa (2)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Drei", article: "", fr: "Trois (3)", mg: "Telo (3)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Vier", article: "", fr: "Quatre (4)", mg: "Efatra (4)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Fünf", article: "", fr: "Cinq (5)", mg: "Dimy (5)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Sechs", article: "", fr: "Six (6)", mg: "Enina (6)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Sieben", article: "", fr: "Sept (7)", mg: "Fito (7)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Acht", article: "", fr: "Huit (8)", mg: "Valo (8)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Neun", article: "", fr: "Neuf (9)", mg: "Sivy (9)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+  { de: "Zehn", article: "", fr: "Dix (10)", mg: "Folo (10)", cat: "nombres", example_de: "", example_fr: "", example_mg: "" },
+
+  // Adjectifs
+  { de: "Gut", article: "", fr: "Bon / Bien", mg: "Tsara", cat: "adjectifs", example_de: "Das ist sehr gut!", example_fr: "C'est très bien!", example_mg: "Tsara be izany!" },
+  { de: "Groß", article: "", fr: "Grand", mg: "Lehibe", cat: "adjectifs", example_de: "Das Haus ist groß.", example_fr: "La maison est grande.", example_mg: "Lehibe ny trano." },
+  { de: "Klein", article: "", fr: "Petit", mg: "Kely", cat: "adjectifs", example_de: "Das Kind ist noch klein.", example_fr: "L'enfant est encore petit.", example_mg: "Kely mbola ny zaza." },
+  { de: "Schön", article: "", fr: "Beau / Belle", mg: "Tsara tarehy / Mahafinaritra", cat: "adjectifs", example_de: "Das Wetter ist schön.", example_fr: "Le temps est beau.", example_mg: "Tsara ny andro." },
+  { de: "Glücklich", article: "", fr: "Heureux / Heureuse", mg: "Faly", cat: "adjectifs", example_de: "Ich bin sehr glücklich.", example_fr: "Je suis très heureux.", example_mg: "Faly be aho." },
+  { de: "Schwer", article: "", fr: "Difficile / Lourd", mg: "Sarotra / Mavesatra", cat: "adjectifs", example_de: "Deutsch ist nicht so schwer.", example_fr: "L'allemand n'est pas si difficile.", example_mg: "Tsy sarotra loatra ny teny alemanina." },
+  { de: "Neu", article: "", fr: "Nouveau / Neuf", mg: "Vaovao", cat: "adjectifs", example_de: "Mein Auto ist neu.", example_fr: "Ma voiture est neuve.", example_mg: "Vaovao ny fiarak-diako." },
+
+  // Verbes
+  { de: "Lernen", article: "", fr: "Apprendre", mg: "Mianatra", cat: "verbes", example_de: "Ich lerne jeden Tag Deutsch.", example_fr: "J'apprends l'allemand chaque jour.", example_mg: "Mianatra alemanina aho isan'andro." },
+  { de: "Sprechen", article: "", fr: "Parler", mg: "Miteny", cat: "verbes", example_de: "Ich spreche ein bisschen Deutsch.", example_fr: "Je parle un peu allemand.", example_mg: "Miteny alemanina kely aho." },
+  { de: "Essen", article: "", fr: "Manger", mg: "Mihinana", cat: "verbes", example_de: "Wir essen zusammen.", example_fr: "Nous mangeons ensemble.", example_mg: "Miara-mihinana isika." },
+  { de: "Trinken", article: "", fr: "Boire", mg: "Misotro", cat: "verbes", example_de: "Sie trinkt gerne Tee.", example_fr: "Elle aime boire du thé.", example_mg: "Tia misotro dite izy." },
+  { de: "Gehen", article: "", fr: "Aller / Marcher", mg: "Mandeha", cat: "verbes", example_de: "Ich gehe nach Hause.", example_fr: "Je vais à la maison.", example_mg: "Mandeha any an-trano aho." },
+  { de: "Haben", article: "", fr: "Avoir", mg: "Manana", cat: "verbes", example_de: "Ich habe ein Buch.", example_fr: "J'ai un livre.", example_mg: "Manana boky aho." },
+  { de: "Sein", article: "", fr: "Être", mg: "Hoe / Misy", cat: "verbes", example_de: "Ich bin Student.", example_fr: "Je suis étudiant.", example_mg: "Mpianatra aho." },
+  { de: "Machen", article: "", fr: "Faire", mg: "Manao", cat: "verbes", example_de: "Was machst du?", example_fr: "Que fais-tu?", example_mg: "Inona no ataonao?" },
+  { de: "Kommen", article: "", fr: "Venir", mg: "Avy (manatona)", cat: "verbes", example_de: "Woher kommst du?", example_fr: "D'où viens-tu?", example_mg: "Avy aiza ianao?" },
+  { de: "Wohnen", article: "", fr: "Habiter / Vivre", mg: "Mipetraka", cat: "verbes", example_de: "Ich wohne in Antananarivo.", example_fr: "J'habite à Antananarivo.", example_mg: "Mipetraka eto Antananarivo aho." },
+  { de: "Verstehen", article: "", fr: "Comprendre", mg: "Mahazo / Mahafantatra", cat: "verbes", example_de: "Ich verstehe nicht.", example_fr: "Je ne comprends pas.", example_mg: "Tsy azoko." },
+  { de: "Helfen", article: "", fr: "Aider", mg: "Manampy", cat: "verbes", example_de: "Kannst du mir helfen?", example_fr: "Peux-tu m'aider?", example_mg: "Afaka manampy ahy ve ianao?" },
+
+  // Temps
+  { de: "Heute", article: "", fr: "Aujourd'hui", mg: "Anio / Androany", cat: "temps", example_de: "Heute ist ein schöner Tag.", example_fr: "Aujourd'hui est une belle journée.", example_mg: "Tsara ny andro anio." },
+  { de: "Morgen", article: "", fr: "Demain / Matin", mg: "Ampitso / Maraina", cat: "temps", example_de: "Bis morgen!", example_fr: "À demain!", example_mg: "Ampitso!" },
+  { de: "Gestern", article: "", fr: "Hier", mg: "Omaly", cat: "temps", example_de: "Gestern war ich müde.", example_fr: "Hier j'étais fatigué.", example_mg: "Reraka aho omaly." },
+  { de: "Jetzt", article: "", fr: "Maintenant", mg: "Izao ankehitriny izao", cat: "temps", example_de: "Was machst du jetzt?", example_fr: "Que fais-tu maintenant?", example_mg: "Inona no ataonao izao?" },
+
+  // Pronoms & grammaire
+  { de: "Ich", article: "", fr: "Je / Moi", mg: "Izaho / Aho", cat: "grammaire", example_de: "Ich bin Student.", example_fr: "Je suis étudiant.", example_mg: "Mpianatra aho." },
+  { de: "Du", article: "", fr: "Tu / Toi", mg: "Ianao (namana)", cat: "grammaire", example_de: "Du bist mein Freund.", example_fr: "Tu es mon ami.", example_mg: "Namako ianao." },
+  { de: "Er / Sie / Es", article: "", fr: "Il / Elle / Ça", mg: "Izy (lahy/vavy/zavatra)", cat: "grammaire", example_de: "Er ist groß. Sie ist klein.", example_fr: "Il est grand. Elle est petite.", example_mg: "Lehibe izy lahy. Kely izy vavy." },
+  { de: "Wir", article: "", fr: "Nous", mg: "Isika / Izahay", cat: "grammaire", example_de: "Wir lernen Deutsch.", example_fr: "Nous apprenons l'allemand.", example_mg: "Mianatra alemanina isika." },
+  { de: "Sie (Höflich)", article: "", fr: "Vous (politesse)", mg: "Ianao (fanajana)", cat: "grammaire", example_de: "Wie heißen Sie?", example_fr: "Comment vous appelez-vous?", example_mg: "Inona no anaranareo?" },
+  { de: "Nicht", article: "", fr: "Ne...pas (négation)", mg: "Tsy (fandavana)", cat: "grammaire", example_de: "Das ist nicht gut.", example_fr: "Ce n'est pas bien.", example_mg: "Tsy tsara izany." },
+  { de: "Kein", article: "", fr: "Pas de / Aucun", mg: "Tsy misy", cat: "grammaire", example_de: "Ich habe kein Geld.", example_fr: "Je n'ai pas d'argent.", example_mg: "Tsy manana vola aho." },
+  { de: "Und", article: "", fr: "Et", mg: "Ary / Sy", cat: "grammaire", example_de: "Du und ich.", example_fr: "Toi et moi.", example_mg: "Ianao sy aho." },
+  { de: "Oder", article: "", fr: "Ou", mg: "Na / Na", cat: "grammaire", example_de: "Kaffee oder Tee?", example_fr: "Café ou thé?", example_mg: "Kafe na dite?" },
+  { de: "Aber", article: "", fr: "Mais", mg: "Fa / Nefa", cat: "grammaire", example_de: "Ich will, aber ich kann nicht.", example_fr: "Je veux, mais je ne peux pas.", example_mg: "Te-hanao aho fa tsy vitako." },
+  { de: "Sehr", article: "", fr: "Très / Beaucoup", mg: "Tena / Be", cat: "grammaire", example_de: "Es ist sehr schön.", example_fr: "C'est très beau.", example_mg: "Tsara be izany." },
+  { de: "Ein bisschen", article: "", fr: "Un peu", mg: "Kely", cat: "grammaire", example_de: "Ich spreche ein bisschen Deutsch.", example_fr: "Je parle un peu allemand.", example_mg: "Miteny alemanina kely aho." },
+  { de: "Vielleicht", article: "", fr: "Peut-être", mg: "Angamba", cat: "grammaire", example_de: "Vielleicht komme ich morgen.", example_fr: "Je viens peut-être demain.", example_mg: "Angamba ho avy aho ampitso." },
+
+  // Questions
+  { de: "Was", article: "", fr: "Quoi / Que", mg: "Inona", cat: "questions", example_de: "Was machst du?", example_fr: "Que fais-tu?", example_mg: "Inona no ataonao?" },
+  { de: "Wer", article: "", fr: "Qui", mg: "Iza", cat: "questions", example_de: "Wer bist du?", example_fr: "Qui es-tu?", example_mg: "Iza ianao?" },
+  { de: "Wo", article: "", fr: "Où", mg: "Aiza", cat: "questions", example_de: "Wo wohnst du?", example_fr: "Où habites-tu?", example_mg: "Aiza no mipetraka ianao?" },
+  { de: "Wann", article: "", fr: "Quand", mg: "Rahoviana / Oviana", cat: "questions", example_de: "Wann kommst du?", example_fr: "Quand viens-tu?", example_mg: "Rahoviana no ho avy ianao?" },
+  { de: "Wie", article: "", fr: "Comment", mg: "Ahoana", cat: "questions", example_de: "Wie geht es dir?", example_fr: "Comment vas-tu?", example_mg: "Salama ve ianao?" },
+  { de: "Warum", article: "", fr: "Pourquoi", mg: "Nahoana", cat: "questions", example_de: "Warum lernst du Deutsch?", example_fr: "Pourquoi tu apprends l'allemand?", example_mg: "Nahoana no mianatra alemanina ianao?" },
+  { de: "Woher", article: "", fr: "D'où", mg: "Avy aiza", cat: "questions", example_de: "Woher kommst du?", example_fr: "D'où viens-tu?", example_mg: "Avy aiza ianao?" },
+  { de: "Wie viel", article: "", fr: "Combien", mg: "Ohatrinona / Firy", cat: "questions", example_de: "Wie viel kostet das?", example_fr: "Combien ça coûte?", example_mg: "Ohatrinona izany?" },
+];
+
+const FILL_EXERCISES = [
+  { sentence_fr: "___ bin Student.", sentence_mg: "___ dia mpianatra.", blank: "Ich", options: ["Ich", "Du", "Er", "Wir"], explanation_fr: '"Ich" = Je / Moi', explanation_mg: '"Ich" = Izaho / Aho' },
+  { sentence_fr: "Ich ___ ein Buch.", sentence_mg: "Aho ___ boky iray.", blank: "habe", options: ["habe", "hast", "hat", "haben"], explanation_fr: '"habe" = forme de "haben" avec "Ich"', explanation_mg: '"habe" = endrika "haben" miaraka amin\'ny "Ich"' },
+  { sentence_fr: "Das ___ ein Auto.", sentence_mg: "Fiara iray ___ io.", blank: "ist", options: ["ist", "bin", "sind", "seid"], explanation_fr: '"ist" = forme de "sein" avec das/er/sie/es', explanation_mg: '"ist" = endrika "sein" miaraka amin\'ny das/er/sie/es' },
+  { sentence_fr: "Wir ___ Wasser.", sentence_mg: "Isika ___ rano.", blank: "trinken", options: ["trinken", "trinke", "trinkst", "trinkt"], explanation_fr: '"trinken" = forme de boire avec "wir"', explanation_mg: '"trinken" = endrika misotro miaraka amin\'ny "wir"' },
+  { sentence_fr: "Mein ___ ist groß.", sentence_mg: "Ny ___ ahy dia lehibe.", blank: "Haus", options: ["Haus", "Auto", "Buch", "Tisch"], explanation_fr: '"Haus" = maison', explanation_mg: '"Haus" = trano' },
+  { sentence_fr: "Das ist ___ gut.", sentence_mg: "Io ___ tsara.", blank: "nicht", options: ["nicht", "kein", "nein", "nie"], explanation_fr: '"nicht" = négation avec un adjectif', explanation_mg: '"nicht" = fandavana miaraka amin\'ny mpamari-toetra' },
+  { sentence_fr: "Kommst ___ aus Madagaskar?", sentence_mg: "___ avy any Madagasikara?", blank: "du", options: ["du", "er", "sie", "ich"], explanation_fr: '"du" = tu (forme familière)', explanation_mg: '"du" = ianao (fomba namana)' },
+  { sentence_fr: "___ lernt Deutsch.", sentence_mg: "___ mianatra alemanina.", blank: "Sie", options: ["Sie", "Er", "Ich", "Wir"], explanation_fr: '"Sie" (fém.) = Elle', explanation_mg: '"Sie" (vavy) = Izy vavy' },
+  { sentence_fr: "Ich ___ Deutsch.", sentence_mg: "Aho ___ alemanina.", blank: "spreche", options: ["spreche", "sprechen", "sprichst", "spricht"], explanation_fr: '"spreche" = parler avec "ich"', explanation_mg: '"spreche" = miteny miaraka amin\'ny "ich"' },
+  { sentence_fr: "Guten ___, wie geht es dir?", sentence_mg: "___ tsara, salama ve ianao?", blank: "Tag", options: ["Tag", "Nacht", "Morgen", "Abend"], explanation_fr: '"Guten Tag" = bonjour (dans la journée)', explanation_mg: '"Guten Tag" = manahoana (antoandro)' },
+  { sentence_fr: "Ich ___ nach Hause.", sentence_mg: "Aho ___ any an-trano.", blank: "gehe", options: ["gehe", "geht", "gehen", "gehst"], explanation_fr: '"gehe" = aller avec "ich"', explanation_mg: '"gehe" = mandeha miaraka amin\'ny "ich"' },
+  { sentence_fr: "Meine ___ kocht gut.", sentence_mg: "Ny ___ ahy dia mahandro tsara.", blank: "Mutter", options: ["Mutter", "Vater", "Kind", "Freund"], explanation_fr: '"Mutter" = mère', explanation_mg: '"Mutter" = reny / neny' },
+  { sentence_fr: "Ich habe ___ Geld.", sentence_mg: "Aho ___ manana vola.", blank: "kein", options: ["kein", "nicht", "nein", "nie"], explanation_fr: '"kein" = pas de (avec un nom)', explanation_mg: '"kein" = tsy misy (miaraka amin\'ny anarana)' },
+  { sentence_fr: "Viel ___!", sentence_mg: "___ be!", blank: "Glück", options: ["Glück", "Danke", "Bitte", "Zeit"], explanation_fr: '"Viel Glück" = Bonne chance!', explanation_mg: '"Viel Glück" = Tsara vintana!' },
+  { sentence_fr: "Es geht mir ___.", sentence_mg: "___ tsara aho.", blank: "gut", options: ["gut", "schlecht", "nicht", "sehr"], explanation_fr: '"Es geht mir gut" = Je vais bien', explanation_mg: '"Es geht mir gut" = Salama tsara aho' },
+];
+
+const GRAMMAR_CONJ = {
+  haben: { ich: "habe", du: "hast", "er/sie/es": "hat", wir: "haben", ihr: "habt", "Sie/sie": "haben" },
+  sein: { ich: "bin", du: "bist", "er/sie/es": "ist", wir: "sind", ihr: "seid", "Sie/sie": "sind" },
+  gehen: { ich: "gehe", du: "gehst", "er/sie/es": "geht", wir: "gehen", ihr: "geht", "Sie/sie": "gehen" },
+  lernen: { ich: "lerne", du: "lernst", "er/sie/es": "lernt", wir: "lernen", ihr: "lernt", "Sie/sie": "lernen" },
+  sprechen: { ich: "spreche", du: "sprichst", "er/sie/es": "spricht", wir: "sprechen", ihr: "sprecht", "Sie/sie": "sprechen" },
+  essen: { ich: "esse", du: "isst", "er/sie/es": "isst", wir: "essen", ihr: "esst", "Sie/sie": "essen" },
+};
+
+// ===================== STATE =====================
+let currentLang = 'fr';
+let currentMode = 'vocab';
+let currentCat = 'all';
+let seenWords = new Set();
+let fillIndex = 0;
+let fillAnswered = false;
+let fillScore = 0;
+let fillTotal = 0;
+let translateIndex = 0;
+let matchSelected = null;
+let matchPairs = [];
+let matchMatched = new Set();
+let reviewIndex = 0;
+let reviewScore = 0;
+let reviewTotal = 0;
+let reviewAnswered = false;
+
+// ===================== LANG =====================
+const T = {
+  fr: {
+    vocab: "Vocabulaire", fill: "Compléter", match: "Associer", translate: "Traduire", grammar: "Grammaire", review: "Quiz Final",
+    all: "Tout", salutations: "Salutations", famille: "Famille", nourriture: "Nourriture", maison: "Maison",
+    ville: "Ville", animaux: "Animaux", nombres: "Nombres", adjectifs: "Adjectifs", verbes: "Verbes",
+    temps: "Temps", grammaire: "Grammaire", questions: "Questions",
+    clickExpand: "Cliquez pour voir un exemple",
+    matchInstr: "Cliquez un mot allemand, puis son équivalent français pour les associer",
+    german: "Allemand", translation: "Traduction",
+    score: "Score", correct: "Correct", wrong: "Faux",
+    next: "Question suivante →", check: "Vérifier", reveal: "Révéler la réponse",
+    question: "Question", of: "sur",
+    typeHere: "Tapez votre traduction ici...",
+    explanation: "Explication",
+    resetMatch: "Nouveau tirage",
+    articleTitle: "Les Articles Définis", articleSub: "Chaque nom a un article : der (masc.), die (fém.), das (neutre)",
+    conjTitle: "Conjugaison des Verbes Clés", conjSub: "Les verbes se conjuguent différemment selon le pronom",
+    articlesWords: "Exemples de Noms",
+    startQuiz: "Démarrer le Quiz", quizScore: "Votre Score Final",
+    backToStart: "Recommencer",
+    noResult: "Aucun résultat dans cette catégorie.",
+    matchDone: "Toutes les paires trouvées! 🎉",
+    reviewDone: "Quiz terminé!",
+    points: "points",
+  },
+  mg: {
+    vocab: "Teny fototra", fill: "Fenoy", match: "Ampifandraisey", translate: "Adika", grammar: "Fehezan-dalàna", review: "Fanadinana",
+    all: "Rehetra", salutations: "Fiarahabana", famille: "Fianakaviana", nourriture: "Sakafo", maison: "Trano",
+    ville: "Tanàna", animaux: "Biby", nombres: "Isa", adjectifs: "Mpamari-toetra", verbes: "Maty paika",
+    temps: "Fotoana", grammaire: "Fehezan-dalàna", questions: "Fanontaniana",
+    clickExpand: "Tsindrio hahita ohatra",
+    matchInstr: "Tsindrio ny teny alemanina, avy eo ny teny mifanitsy aminy",
+    german: "Alemanina", translation: "Fandikana",
+    score: "Isa", correct: "Sahaza", wrong: "Diso",
+    next: "Fanontaniana manaraka →", check: "Jereo", reveal: "Asehoy ny valiny",
+    question: "Fanontaniana", of: "amin'ny",
+    typeHere: "Soraty eto ny fandikana...",
+    explanation: "Fanazavana",
+    resetMatch: "Safidy vaovao",
+    articleTitle: "Ny Articles Voatondro", articleSub: "Manana article ny teny rehetra: der (lahy), die (vavy), das (tsy voatondro)",
+    conjTitle: "Famolavolana Maty paika", conjSub: "Miova ny maty paika arakaraka ny mpisolo tena",
+    articlesWords: "Ohatra Teny",
+    startQuiz: "Hanomboka ny Fanadinana", quizScore: "Vokatra farany",
+    backToStart: "Manomboka indray",
+    noResult: "Tsy misy vokatry ny katagoria ity.",
+    matchDone: "Hitana ny efatra rehetra! 🎉",
+    reviewDone: "Vita ny fanadinana!",
+    points: "vokatra",
+  }
+};
+
+function t(key) { return T[currentLang][key] || key; }
+function wordTranslation(w) { return currentLang === 'fr' ? w.fr : w.mg; }
+function exampleTranslation(w) { return currentLang === 'fr' ? w.example_fr : w.example_mg; }
+
+// ===================== WELCOME =====================
+function selectLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + lang).classList.add('selected');
+  const btn = document.getElementById('startBtn');
+  btn.disabled = false;
+  if (lang === 'fr') {
+    btn.textContent = "Commencer l'apprentissage →";
+  } else {
+    btn.textContent = "Hanomboka ny fianarana →";
+  }
+}
+
+function startApp() {
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  updateLangLabel();
+  switchMode('vocab');
+}
+
+function goHome() {
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('welcome').classList.add('active');
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'fr' ? 'mg' : 'fr';
+  updateLangLabel();
+  renderCurrentMode();
+}
+
+function updateLangLabel() {
+  document.getElementById('langLabel').textContent = currentLang.toUpperCase();
+}
+
+// ===================== NAVIGATION =====================
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === mode);
+  });
+  renderCurrentMode();
+}
+
+function renderCurrentMode() {
+  const mc = document.getElementById('mainContent');
+  mc.innerHTML = '';
+  mc.className = 'content fade-in';
+  if (currentMode === 'vocab') renderVocab();
+  else if (currentMode === 'fill') renderFill();
+  else if (currentMode === 'match') renderMatch();
+  else if (currentMode === 'translate') renderTranslate();
+  else if (currentMode === 'grammar') renderGrammar();
+  else if (currentMode === 'review') renderReview();
+}
+
+function updateProgress() {
+  const total = VOCAB.length;
+  const seen = seenWords.size;
+  document.getElementById('progressFill').style.width = (seen / total * 100) + '%';
+  document.getElementById('progressText').textContent = seen + ' / ' + total;
+}
+
+// ===================== MODE 1: VOCAB =====================
+function renderVocab() {
+  const mc = document.getElementById('mainContent');
+  const cats = ['all', ...new Set(VOCAB.map(v => v.cat))];
+
+  let html = `<div class="category-bar">`;
+  cats.forEach(c => {
+    html += `<button class="cat-btn ${currentCat === c ? 'active' : ''}" onclick="setCat('${c}')">${t(c)}</button>`;
+  });
+  html += `</div><div class="vocab-grid" id="vocabGrid">`;
+
+  const filtered = currentCat === 'all' ? VOCAB : VOCAB.filter(v => v.cat === currentCat);
+  if (!filtered.length) {
+    html += `<div class="empty-state"><div class="icon">🔍</div><p>${t('noResult')}</p></div>`;
+  } else {
+    filtered.forEach((w, i) => {
+      const articleClass = w.article === 'der' ? 'article-der' : w.article === 'die' ? 'article-die' : w.article === 'das' ? 'article-das' : '';
+      const displayDE = w.article ? `${w.article} ${w.de}` : w.de;
+      const ex = exampleTranslation(w);
+      const exDE = w.example_de;
+      seenWords.add(i);
+      html += `
+        <div class="vocab-card" onclick="this.classList.toggle('expanded')">
+          ${w.article ? `<div class="vc-article ${articleClass}">${w.article}</div>` : ''}
+          <div class="vc-german">${w.de}</div>
+          <div class="vc-translation">${wordTranslation(w)}</div>
+          <span class="vc-category">${t(w.cat)}</span>
+          ${exDE ? `<div class="vc-example"><strong>DE:</strong> ${exDE}<br><small>${ex}</small></div>` : ''}
+        </div>`;
+    });
+  }
+  html += `</div>`;
+  mc.innerHTML = html;
+  updateProgress();
+}
+
+function setCat(cat) {
+  currentCat = cat;
+  renderVocab();
+}
+
+// ===================== MODE 2: FILL =====================
+function renderFill() {
+  const mc = document.getElementById('mainContent');
+  if (fillIndex >= FILL_EXERCISES.length) fillIndex = 0;
+  fillAnswered = false;
+  const ex = FILL_EXERCISES[fillIndex];
+  const sentence = currentLang === 'fr' ? ex.sentence_fr : ex.sentence_mg;
+  const expl = currentLang === 'fr' ? ex.explanation_fr : ex.explanation_mg;
+
+  let shuffled = [...ex.options].sort(() => Math.random() - 0.5);
+
+  let html = `
+    <div class="fill-container">
+      <div class="fill-progress">
+        <div class="fill-counter">${t('question')} ${fillIndex + 1} ${t('of')} ${FILL_EXERCISES.length}</div>
+        <div class="score-badge">✓ ${fillScore} / ${fillTotal}</div>
+      </div>
+      <div class="fill-card">
+        <div class="fill-sentence">${sentence.replace('___', '<span class="fill-blank" id="fillBlank">___</span>')}</div>
+        <div class="fill-options" id="fillOptions">
+          ${shuffled.map(opt => `<button class="fill-option" onclick="checkFill('${opt}', '${ex.blank}', this)">${opt}</button>`).join('')}
+        </div>
+        <div class="fill-feedback" id="fillFeedback"></div>
+      </div>
+      <div class="next-btn" id="fillNext" onclick="nextFill()">
+        ${t('next')}
+      </div>
+    </div>`;
+  mc.innerHTML = html;
+}
+
+function checkFill(chosen, correct, btn) {
+  if (fillAnswered) return;
+  fillAnswered = true;
+  fillTotal++;
+  const ex = FILL_EXERCISES[fillIndex];
+  const expl = currentLang === 'fr' ? ex.explanation_fr : ex.explanation_mg;
+  const isCorrect = chosen === correct;
+  if (isCorrect) fillScore++;
+
+  document.querySelectorAll('.fill-option').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  document.getElementById('fillBlank').textContent = correct;
+  document.getElementById('fillBlank').style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+
+  const fb = document.getElementById('fillFeedback');
+  fb.className = `fill-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+  fb.innerHTML = isCorrect ? `✓ ${t('correct')}! ${expl}` : `✗ ${t('wrong')}. ${t('explanation')}: ${expl}`;
+
+  document.getElementById('fillNext').classList.add('show');
+  if (isCorrect) celebrate();
+}
+
+function nextFill() {
+  fillIndex = (fillIndex + 1) % FILL_EXERCISES.length;
+  renderFill();
+}
+
+// ===================== MODE 3: MATCH =====================
+function renderMatch() {
+  const mc = document.getElementById('mainContent');
+  matchSelected = null;
+  matchMatched = new Set();
+
+  // Pick 6 random words
+  const shuffled = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 6);
+  matchPairs = shuffled.map(w => ({ de: w.de, tr: wordTranslation(w) }));
+
+  let leftWords = [...matchPairs].map(p => p.de).sort(() => Math.random() - 0.5);
+  let rightWords = [...matchPairs].map(p => p.tr).sort(() => Math.random() - 0.5);
+
+  let html = `
+    <div class="match-container">
+      <p class="match-instructions">${t('matchInstr')}</p>
+      <div class="match-score-display" id="matchScore">0 / ${matchPairs.length}</div>
+      <div class="match-columns">
+        <div>
+          <div class="match-col-title">🇩🇪 ${t('german')}</div>
+          ${leftWords.map(w => `<div class="match-item" data-side="left" data-val="${w}" onclick="selectMatch(this)">${w}</div>`).join('')}
+        </div>
+        <div>
+          <div class="match-col-title">🌐 ${t('translation')}</div>
+          ${rightWords.map(w => `<div class="match-item" data-side="right" data-val="${w}" onclick="selectMatch(this)">${w}</div>`).join('')}
+        </div>
+      </div>
+      <button class="reload-match-btn" onclick="renderMatch()">↻ ${t('resetMatch')}</button>
+    </div>`;
+  mc.innerHTML = html;
+}
+
+function selectMatch(el) {
+  if (el.classList.contains('matched')) return;
+  
+  if (!matchSelected) {
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      return;
+    }
+    document.querySelectorAll('.match-item.selected').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    matchSelected = el;
+    return;
+  }
+
+  // Same side
+  if (matchSelected.dataset.side === el.dataset.side) {
+    matchSelected.classList.remove('selected');
+    el.classList.add('selected');
+    matchSelected = el;
+    return;
+  }
+
+  // Check pair
+  const leftVal = matchSelected.dataset.side === 'left' ? matchSelected.dataset.val : el.dataset.val;
+  const rightVal = matchSelected.dataset.side === 'right' ? matchSelected.dataset.val : el.dataset.val;
+
+  const pair = matchPairs.find(p => p.de === leftVal && p.tr === rightVal);
+
+  if (pair) {
+    // Correct!
+    [matchSelected, el].forEach(e => {
+      e.classList.remove('selected');
+      e.classList.add('matched');
+    });
+    matchMatched.add(leftVal);
+    celebrate();
+    const done = matchMatched.size;
+    document.getElementById('matchScore').textContent = done + ' / ' + matchPairs.length;
+    if (done === matchPairs.length) {
+      setTimeout(() => {
+        document.getElementById('matchScore').innerHTML = `<span style="color:var(--green)">${t('matchDone')}</span>`;
+      }, 300);
+    }
+  } else {
+    // Wrong
+    [matchSelected, el].forEach(e => {
+      e.classList.remove('selected');
+      e.classList.add('wrong-flash');
+      setTimeout(() => e.classList.remove('wrong-flash'), 400);
+    });
+  }
+  matchSelected = null;
+}
+
+// ===================== MODE 4: TRANSLATE =====================
+function renderTranslate() {
+  const mc = document.getElementById('mainContent');
+  if (translateIndex >= VOCAB.length) translateIndex = 0;
+  const w = VOCAB[translateIndex];
+  const direction = translateIndex % 2 === 0 ? 'de2tr' : 'tr2de';
+
+  let promptText, promptLang, targetLang, answerText;
+  if (direction === 'de2tr') {
+    promptText = (w.article ? w.article + ' ' : '') + w.de;
+    promptLang = '🇩🇪 Allemand → ' + (currentLang === 'fr' ? 'Français' : 'Malagasy');
+    answerText = wordTranslation(w);
+    targetLang = currentLang === 'fr' ? 'français' : 'malagasy';
+  } else {
+    promptText = wordTranslation(w);
+    promptLang = (currentLang === 'fr' ? 'Français' : 'Malagasy') + ' → 🇩🇪 Allemand';
+    answerText = (w.article ? w.article + ' ' : '') + w.de;
+    targetLang = 'allemand';
+  }
+
+  const expl = currentLang === 'fr' ? w.example_fr : w.example_mg;
+  const exDE = w.example_de;
+
+  let html = `
+    <div class="translate-container">
+      <div class="fill-progress">
+        <div class="fill-counter">${translateIndex + 1} / ${VOCAB.length}</div>
+        <div class="score-badge">🇩🇪 ${t(w.cat)}</div>
+      </div>
+      <div class="translate-card">
+        <div class="translate-prompt-label">${promptLang}</div>
+        <div class="translate-prompt">${promptText}</div>
+        ${exDE ? `<div class="translate-hint">${exDE}</div>` : ''}
+        <textarea class="translate-input" id="translateInput" placeholder="${t('typeHere')}" rows="2"></textarea>
+        <div class="translate-actions">
+          <button class="check-btn" onclick="checkTranslate('${answerText.replace(/'/g, "\\'")}', '${w.de.replace(/'/g, "\\'")}', '${wordTranslation(w).replace(/'/g, "\\'")}', '${(expl || '').replace(/'/g, "\\'")}', '${(exDE || '').replace(/'/g, "\\'")}')">
+            ${t('check')}
+          </button>
+          <button class="reveal-btn" onclick="revealTranslate('${answerText.replace(/'/g, "\\'")}', '${(expl || '').replace(/'/g, "\\'")}', '${(exDE || '').replace(/'/g, "\\'")}')">
+            ${t('reveal')}
+          </button>
+        </div>
+        <div class="translate-answer-box" id="translateAnswer"></div>
+      </div>
+      <div class="translate-nav">
+        <button class="t-nav-btn" onclick="navTranslate(-1)">← Précédent</button>
+        <button class="t-nav-btn" onclick="navTranslate(1)">Suivant →</button>
+      </div>
+    </div>`;
+  mc.innerHTML = html;
+
+  document.getElementById('translateInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') e.target.blur();
+  });
+}
+
+function checkTranslate(answer, de, tr, expl, exDE) {
+  const input = document.getElementById('translateInput').value.trim().toLowerCase();
+  const answerLow = answer.toLowerCase();
+  // Flexible check - allow partial match ignoring articles
+  const isCorrect = input === answerLow || 
+    input === de.toLowerCase() || 
+    input === tr.toLowerCase() ||
+    answerLow.includes(input) && input.length > 2;
+  revealTranslate(answer, expl, exDE, isCorrect);
+}
+
+function revealTranslate(answer, expl, exDE, isCorrect) {
+  const box = document.getElementById('translateAnswer');
+  box.className = 'translate-answer-box show';
+  box.innerHTML = `
+    <div class="answer-label">✓ ${t('explanation')}</div>
+    <div class="answer-text">${answer}</div>
+    ${exDE ? `<div class="answer-explanation">🇩🇪 <em>${exDE}</em></div>` : ''}
+    ${expl ? `<div class="answer-explanation">${expl}</div>` : ''}
+  `;
+  if (isCorrect) celebrate();
+}
+
+function navTranslate(dir) {
+  translateIndex = (translateIndex + dir + VOCAB.length) % VOCAB.length;
+  renderTranslate();
+}
+
+// ===================== MODE 5: GRAMMAR =====================
+function renderGrammar() {
+  const mc = document.getElementById('mainContent');
+
+  // Articles examples
+  const articleExamples = {
+    der: VOCAB.filter(v => v.article === 'der').slice(0, 4),
+    die: VOCAB.filter(v => v.article === 'die').slice(0, 4),
+    das: VOCAB.filter(v => v.article === 'das').slice(0, 4),
+  };
+
+  let html = `<div class="grammar-container">`;
+
+  // Articles section
+  html += `
+    <div class="grammar-section">
+      <div class="grammar-section-title">📌 ${t('articleTitle')}</div>
+      <div class="grammar-section-subtitle">${t('articleSub')}</div>
+      <div class="grammar-articles-grid">
+        <div class="article-card der"><div class="art">der</div><div class="art-type">Masculin</div></div>
+        <div class="article-card die"><div class="art">die</div><div class="art-type">Féminin / Pluriel</div></div>
+        <div class="article-card das"><div class="art">das</div><div class="art-type">Neutre</div></div>
+      </div>
+      <div class="grammar-section-title" style="font-size:1rem;margin-bottom:1rem;">📚 ${t('articlesWords')}</div>
+      <table class="grammar-table">
+        <thead><tr><th>Article</th><th>Mot</th><th>${currentLang === 'fr' ? 'Français' : 'Malagasy'}</th></tr></thead>
+        <tbody>`;
+
+  ['der', 'die', 'das'].forEach(art => {
+    articleExamples[art].forEach((w, i) => {
+      const artClass = `article-${art}`;
+      html += `<tr>
+        ${i === 0 ? `<td class="de ${artClass}" rowspan="${articleExamples[art].length}">${art}</td>` : ''}
+        <td class="de">${w.de}</td>
+        <td>${wordTranslation(w)}</td>
+      </tr>`;
+    });
+  });
+
+  html += `</tbody></table></div>`;
+
+  // Conjugation section
+  html += `
+    <div class="grammar-section">
+      <div class="grammar-section-title">⚙️ ${t('conjTitle')}</div>
+      <div class="grammar-section-subtitle">${t('conjSub')}</div>`;
+
+  Object.entries(GRAMMAR_CONJ).forEach(([verb, conj]) => {
+    html += `
+      <div style="margin-bottom:1.5rem">
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem;">
+          ${verb.charAt(0).toUpperCase() + verb.slice(1)} 
+          <span style="font-size:0.8rem;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400;">
+            — ${currentLang === 'fr' ? (verb === 'haben' ? 'avoir' : verb === 'sein' ? 'être' : verb === 'gehen' ? 'aller' : verb === 'lernen' ? 'apprendre' : verb === 'sprechen' ? 'parler' : 'manger') : (verb === 'haben' ? 'manana' : verb === 'sein' ? 'hoe/misy' : verb === 'gehen' ? 'mandeha' : verb === 'lernen' ? 'mianatra' : verb === 'sprechen' ? 'miteny' : 'mihinana')}
+          </span>
+        </div>
+        <table class="grammar-table">
+          <thead><tr><th>Pronom</th><th>Forme</th></tr></thead>
+          <tbody>`;
+    Object.entries(conj).forEach(([pro, form]) => {
+      html += `<tr><td style="color:var(--accent2)">${pro}</td><td class="de">${form}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  html += `</div>`;
+
+  // Useful patterns
+  html += `
+    <div class="grammar-section">
+      <div class="grammar-section-title">💡 ${currentLang === 'fr' ? 'Expressions Utiles' : 'Hevitra Mahasoa'}</div>
+      <table class="grammar-table">
+        <thead><tr><th>Allemand</th><th>${currentLang === 'fr' ? 'Français' : 'Malagasy'}</th></tr></thead>
+        <tbody>
+          <tr><td class="de">Ich bin... / Ich heiße...</td><td>${currentLang === 'fr' ? 'Je suis... / Je m\'appelle...' : 'Izaho dia... / ... no anarako'}</td></tr>
+          <tr><td class="de">Ich komme aus...</td><td>${currentLang === 'fr' ? 'Je viens de...' : 'Avy any... aho'}</td></tr>
+          <tr><td class="de">Ich lerne Deutsch seit...</td><td>${currentLang === 'fr' ? 'J\'apprends l\'allemand depuis...' : 'Mianatra alemanina aho hatrizay...'}</td></tr>
+          <tr><td class="de">Können Sie langsamer sprechen?</td><td>${currentLang === 'fr' ? 'Pouvez-vous parler plus lentement?' : 'Afaka miteny mora kokoa ve ianao?'}</td></tr>
+          <tr><td class="de">Wie sagt man ... auf Deutsch?</td><td>${currentLang === 'fr' ? 'Comment dit-on ... en allemand?' : 'Ahoana ny filazana ... amin\'ny alemanina?'}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+
+  mc.innerHTML = html;
+}
+
+// ===================== MODE 6: REVIEW =====================
+function renderReview() {
+  const mc = document.getElementById('mainContent');
+
+  if (reviewIndex === 0 && !reviewAnswered) {
+    // Start screen
+    let html = `
+      <div class="review-container">
+        <div class="review-stats" style="margin-bottom:2rem">
+          <div class="stat-card total"><div class="stat-num">${VOCAB.length}</div><div class="stat-label">${currentLang === 'fr' ? 'Mots' : 'Teny'}</div></div>
+          <div class="stat-card correct"><div class="stat-num">${seenWords.size}</div><div class="stat-label">${currentLang === 'fr' ? 'Vus' : 'Hita'}</div></div>
+          <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">${currentLang === 'fr' ? 'Modes' : 'Karazana'}</div></div>
+        </div>
+        <div style="text-align:center;padding:2rem">
+          <div style="font-size:3rem;margin-bottom:1rem">🎯</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:1rem">
+            ${t('startQuiz')}
+          </div>
+          <p style="color:var(--text-muted);margin-bottom:2rem;font-size:0.9rem">
+            ${currentLang === 'fr' ? '20 questions aléatoires sur tout le vocabulaire' : 'Fanontaniana 20 tsy voatokana amin\'ny teny rehetra'}
+          </p>
+          <button class="start-btn" onclick="startReview()" style="font-size:1rem;padding:0.9rem 2.5rem">
+            ${t('startQuiz')} →
+          </button>
+        </div>
+      </div>`;
+    mc.innerHTML = html;
+    return;
+  }
+
+  if (reviewIndex >= 20) {
+    renderReviewResults();
+    return;
+  }
+
+  renderReviewQuestion();
+}
+
+let reviewQuestions = [];
+
+function startReview() {
+  reviewIndex = 0;
+  reviewScore = 0;
+  reviewTotal = 0;
+  reviewAnswered = false;
+  // Generate 20 random questions
+  reviewQuestions = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 20).map(w => {
+    // Random: de→tr or tr→de
+    const type = Math.random() > 0.5 ? 'de2tr' : 'tr2de';
+    const correct = type === 'de2tr' ? wordTranslation(w) : w.de;
+    const others = VOCAB.filter(v => v.de !== w.de)
+      .sort(() => Math.random() - 0.5).slice(0, 3)
+      .map(v => type === 'de2tr' ? wordTranslation(v) : v.de);
+    const options = [...others, correct].sort(() => Math.random() - 0.5);
+    return { w, type, correct, options };
+  });
+  renderReviewQuestion();
+}
+
+function renderReviewQuestion() {
+  const mc = document.getElementById('mainContent');
+  reviewAnswered = false;
+  const q = reviewQuestions[reviewIndex];
+  const prompt = q.type === 'de2tr' ? (q.w.article ? q.w.article + ' ' : '') + q.w.de : wordTranslation(q.w);
+  const promptLabel = q.type === 'de2tr' ? '🇩🇪 → ' + (currentLang === 'fr' ? '🇫🇷' : '🇲🇬') : (currentLang === 'fr' ? '🇫🇷' : '🇲🇬') + ' → 🇩🇪';
+
+  let html = `
+    <div class="review-container">
+      <div class="fill-progress">
+        <div class="fill-counter">${t('question')} ${reviewIndex + 1} / 20</div>
+        <div class="score-badge">✓ ${reviewScore} / ${reviewIndex}</div>
+      </div>
+      <div class="review-card">
+        <div class="review-badge">${promptLabel} • ${t(q.w.cat)}</div>
+        <div class="review-question">${prompt}</div>
+        <div class="review-sub">${currentLang === 'fr' ? 'Choisissez la bonne traduction' : 'Safidio ny fandikana mety'}</div>
+        <div class="review-options">
+          ${q.options.map(opt => `<button class="review-option" onclick="checkReview('${opt.replace(/'/g, "\\'")}', '${q.correct.replace(/'/g, "\\'")}', this)">${opt}</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  mc.innerHTML = html;
+}
+
+function checkReview(chosen, correct, btn) {
+  if (reviewAnswered) return;
+  reviewAnswered = true;
+  reviewTotal++;
+  const isCorrect = chosen === correct;
+  if (isCorrect) { reviewScore++; celebrate(); }
+
+  document.querySelectorAll('.review-option').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  setTimeout(() => {
+    reviewIndex++;
+    if (reviewIndex >= 20) renderReviewResults();
+    else renderReviewQuestion();
+  }, 1200);
+}
+
+function renderReviewResults() {
+  const mc = document.getElementById('mainContent');
+  const pct = Math.round(reviewScore / 20 * 100);
+  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : pct >= 40 ? '📚' : '💪';
+
+  let html = `
+    <div class="review-container">
+      <div style="text-align:center;padding:2rem 0">
+        <div style="font-size:4rem;margin-bottom:1rem">${emoji}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0.5rem">${t('reviewDone')}</div>
+        <div style="font-size:3rem;font-family:'Space Mono',monospace;color:var(--accent);font-weight:700;margin-bottom:2rem">${pct}%</div>
+      </div>
+      <div class="review-stats">
+        <div class="stat-card correct"><div class="stat-num">${reviewScore}</div><div class="stat-label">${t('correct')}</div></div>
+        <div class="stat-card wrong"><div class="stat-num">${20 - reviewScore}</div><div class="stat-label">${t('wrong')}</div></div>
+        <div class="stat-card total"><div class="stat-num">20</div><div class="stat-label">${currentLang === 'fr' ? 'Total' : 'Rehetra'}</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem">
+        <button onclick="startReview()" class="check-btn" style="max-width:200px">
+          ${currentLang === 'fr' ? '↺ Recommencer' : '↺ Manomboka indray'}
+        </button>
+        <button onclick="switchMode('vocab')" class="reveal-btn">
+          ${currentLang === 'fr' ? '📖 Réviser' : '📖 Mamaky indray'}
+        </button>
+      </div>
+    </div>`;
+  mc.innerHTML = html;
+}
+
+// ===================== CELEBRATE =====================
+function celebrate() {
+  const colors = ['var(--accent)', 'var(--accent2)', 'var(--accent3)', 'var(--green)'];
+  const container = document.createElement('div');
+  container.className = 'celebrate';
+  document.body.appendChild(container);
+  for (let i = 0; i < 12; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'celebrate-dot';
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    dot.style.left = x + 'px';
+    dot.style.top = y + 'px';
+    dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+    dot.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+    dot.style.setProperty('--ty', (Math.random() * -200 - 50) + 'px');
+    container.appendChild(dot);
+  }
+  setTimeout(() => container.remove(), 1000);
+}
+
+// INIT
+window.onload = () => {};
+</script>
+</body>
+</html>
